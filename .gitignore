@@ -1,0 +1,7 @@
+.env
+bot.log
+__pycache__/
+*.pyc
+database/bot_database.db
+.vscode/
+.idea/

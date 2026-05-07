@@ -1,0 +1,6 @@
+python-telegram-bot
+flask
+psycopg2-binary
+python-dotenv
+httpx
+gunicorn
