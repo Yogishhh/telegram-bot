@@ -1,0 +1,10 @@
+.git
+.env
+__pycache__
+*.pyc
+bot.log
+database/*.db
+scratch/
+.vscode/
+.idea/
+*.bat
