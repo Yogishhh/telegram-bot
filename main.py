@@ -39,6 +39,10 @@ def main():
         # Start the keep-alive server
         keep_alive()
         
+        # Log Database Type
+        db_type = "PostgreSQL" if os.getenv("DATABASE_URL") else "SQLite"
+        logger.info(f"Using {db_type} database.")
+        
         # Check for Bot Token
         if not BOT_TOKEN or "YOUR_BOT" in BOT_TOKEN:
             logger.error("Please set your BOT_TOKEN in config.py or Environment Variables!")

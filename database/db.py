@@ -9,9 +9,13 @@ def get_db_connection():
     """Returns a database connection based on the environment."""
     database_url = os.getenv("DATABASE_URL")
     if database_url:
+        # Fix for Render/Neon: psycopg2 requires 'postgresql://' but platforms often provide 'postgres://'
+        if database_url.startswith("postgres://"):
+            database_url = database_url.replace("postgres://", "postgresql://", 1)
+            
         # Use PostgreSQL (Render/Supabase)
         try:
-            # Supabase and Render often require SSL
+            # Supabase and Neon often require SSL
             if "sslmode" not in database_url:
                 if "?" in database_url:
                     database_url += "&sslmode=require"
