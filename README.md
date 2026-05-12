@@ -1,3 +1,14 @@
+---
+title: Telegram Bot
+emoji: 🤖
+colorFrom: blue
+colorTo: pink
+sdk: docker
+app_port: 7860
+pinned: false
+license: mit
+---
+
 # 🚀 Telegram Freelance Service Marketplace Bot
 
 A production-ready Telegram bot for managing freelance service requests, order tracking, and administration.
@@ -39,16 +50,34 @@ python main.py
 
 ---
 
-## ☁️ Deployment Guide
+## ☁️ Deployment Guide (Free 24/7 Hosting)
 
-### Railway / Render (Easiest)
-1. Push this code to a GitHub repository.
-2. Connect the repository to [Railway](https://railway.app/) or [Render](https://render.com/).
-3. Add environment variables:
-   - `BOT_TOKEN`
-   - `ADMIN_IDS`
-   - `UPI_ID`
-4. Set the start command to: `python main.py`
+### Deploying to Hugging Face Spaces (Recommended)
+This bot is pre-configured to run completely free 24/7 on Hugging Face Spaces.
+
+1. **Push your code to GitHub**:
+   Run the `update_github.bat` file to push your latest changes to your GitHub repository.
+   
+2. **Create a Hugging Face Space**:
+   - Go to [Hugging Face Spaces](https://huggingface.co/spaces) and click "Create new Space".
+   - Select **Docker** as the SDK.
+   - Choose a blank template.
+
+3. **Link to GitHub**:
+   - Go to your Space settings and link it to your GitHub repository. Hugging Face will automatically build your Dockerfile.
+
+4. **Add Secrets (CRITICAL)**:
+   - Go to your Space **Settings** -> **Variables and Secrets**.
+   - Under **Secrets**, add the following (do NOT put them in public variables):
+     - `BOT_TOKEN`: Your bot token from BotFather.
+     - `ADMIN_IDS`: Your Telegram ID.
+     - `UPI_ID`: Your UPI ID for payments.
+     - `EMAIL_PASSWORD`: Your 16-letter Gmail App Password (if you want email notifications).
+
+5. **24/7 Uptime**:
+   The `main.py` file contains a built-in "Heartbeat" server on port 7860. Hugging Face will keep pinging this port, ensuring your bot never goes to sleep!
+
+### Railway / Render
 
 ### VPS (Ubuntu/Linux)
 1. Install Python and Pip.

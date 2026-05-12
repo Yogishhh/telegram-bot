@@ -15,6 +15,9 @@ UPI_ID = os.getenv("UPI_ID", "yogishtr3515@oksbi")
 
 # Admin Email for Requirements
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "visualsbyyogzz@gmail.com")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "")
+SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+SMTP_PORT = int(os.getenv("SMTP_PORT", 465))
 
 # Hidden Minimum Prices (In INR)
 MIN_PRICES = {

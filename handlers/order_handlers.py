@@ -16,11 +16,9 @@ from utils.logger import logger
     GET_TITLE,
     GET_DESCRIPTION,
     GET_BUDGET,
-    GET_DEADLINE,
-    GET_CONTACT,
     GET_PAYMENT_METHOD,
     CONFIRM_ORDER
-) = range(8)
+) = range(6)
 
 async def start_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Starts the order process based on the selected service."""
@@ -102,21 +100,6 @@ async def get_budget(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return GET_BUDGET # Strictly loop back
 
-    await update.message.reply_text(
-        "📅 What is your desired *Deadline*? (e.g., '2 weeks' or 'June 1st')"
-    )
-    return GET_DEADLINE
-
-async def get_deadline(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    context.user_data['deadline'] = update.message.text
-    await update.message.reply_text(
-        "📞 Please provide your *Contact Details* (Email, WhatsApp, or keep it as Telegram username):"
-    )
-    return GET_CONTACT
-
-async def get_contact(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    context.user_data['contact'] = update.message.text
-    
     reply_markup = ReplyKeyboardMarkup([["🇮🇳 India (UPI/GPay)", "🌎 Other (Telegram Gift)"]], resize_keyboard=True, one_time_keyboard=True)
     
     await update.message.reply_text(
@@ -137,8 +120,6 @@ async def get_payment_method(update: Update, context: ContextTypes.DEFAULT_TYPE)
         f"📌 *Title:* {data['title']}\n"
         f"📝 *Description:* {data['description']}\n"
         f"💰 *Budget:* {data['budget']}\n"
-        f"📅 *Deadline:* {data['deadline']}\n"
-        f"📞 *Contact:* {data['contact']}\n"
         f"📍 *Payment via:* {data['payment_method']}\n\n"
         "Does everything look correct? Type 'yes' to confirm or /cancel to abort."
     )
@@ -156,8 +137,8 @@ async def confirm_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 data['title'],
                 data['description'],
                 data['budget'],
-                data['deadline'],
-                data['contact']
+                "Not Specified",
+                update.effective_user.username or "Not Specified"
             )
             
             # --- BUDGET CHECK ---
@@ -177,10 +158,10 @@ async def confirm_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 acceptance_text = (
                     f"🏅 *Vision Confirmed!* Your project request for **{data['service_type']}** has been officially logged.\n\n"
                     f"🔖 *Order Reference:* `#{order_id}`\n\n"
-                    "🛡 *Our Premium Guarantee:* If we fail to deliver your project within the agreed timeline, we will issue a **100% Instant Refund**.\n\n"
-                    "To initiate production immediately, please fulfill the **50% Commitment Advance**.\n\n"
+                    "To initiate production immediately, please fulfill the **50% Commitment Advance** to book your project.\n\n"
                     f"{payment_instr}\n\n"
-                    "✨ *Upon verification, we will share our exclusive briefing email for asset submission.*"
+                    "✨ *Once your 50% payment is done, please email your PRD or required project documents to `visualsbyyogzz@gmail.com`.*\n\n"
+                    "We will contact you soon. 🛡 *We will refund you 100% in case we cannot deliver your project in time.*"
                 )
                 await update.message.reply_text(acceptance_text, parse_mode="Markdown")
             else:
@@ -200,8 +181,9 @@ async def confirm_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 acceptance_text = (
                     f"🏅 *Vision Confirmed!* Your project request for **{data['service_type']}** has been officially logged.\n\n"
                     f"🔖 *Order Reference:* `#{order_id}`\n\n"
-                    "🛡 *Our Premium Guarantee:* If we fail to deliver your project within the agreed timeline, we will issue a **100% Instant Refund**.\n\n"
-                    "📍 *International Payment:* Since you are outside India, you can pay the 50% advance directly using **Telegram Stars** below."
+                    "📍 *International Payment:* Since you are outside India, you can pay the 50% advance directly using **Telegram Stars** below to book your project.\n\n"
+                    "✨ *Once your 50% payment is done, please email your PRD or required project documents to `visualsbyyogzz@gmail.com`.*\n\n"
+                    "We will contact you soon. 🛡 *We will refund you 100% in case we cannot deliver your project in time.*"
                 )
                 await update.message.reply_text(acceptance_text, parse_mode="Markdown")
                 
@@ -223,8 +205,9 @@ async def confirm_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         "💰 *Alternative Payment:* Please send a **Telegram Gift** worth 50% of your budget to this bot and share the screenshot."
                     )
 
-            # --- NOTIFY ADMIN ---
+            # --- NOTIFY ADMIN VIA TELEGRAM ---
             from config import ADMIN_IDS
+            
             admin_text = (
                 "🚨 *NEW ORDER RECEIVED!*\n\n"
                 f"👤 User: {update.effective_user.first_name} (@{update.effective_user.username})\n"
@@ -232,15 +215,14 @@ async def confirm_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"🔹 Service: {data['service_type']}\n"
                 f"📌 Title: {data['title']}\n"
                 f"📝 Description: {data['description']}\n"
-                f"💰 Budget: {data['budget']}\n"
-                f"📅 Deadline: {data['deadline']}\n"
-                f"📞 Contact: {data['contact']}"
+                f"💰 Budget: {data['budget']}"
             )
             for admin_id in ADMIN_IDS:
                 try:
                     await context.bot.send_message(chat_id=admin_id, text=admin_text, parse_mode="Markdown")
                 except Exception as e:
                     logger.error(f"Failed to notify admin {admin_id}: {e}")
+            
             
             # Clear data
             context.user_data.clear()
@@ -268,8 +250,6 @@ order_conv_handler = ConversationHandler(
         GET_TITLE: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_title)],
         GET_DESCRIPTION: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_description)],
         GET_BUDGET: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_budget)],
-        GET_DEADLINE: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_deadline)],
-        GET_CONTACT: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_contact)],
         GET_PAYMENT_METHOD: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_payment_method)],
         CONFIRM_ORDER: [MessageHandler(filters.TEXT & ~filters.COMMAND, confirm_order)],
     },

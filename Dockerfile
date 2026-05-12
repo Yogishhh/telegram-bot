@@ -23,7 +23,7 @@ COPY . .
 RUN mkdir -p database
 
 # Expose the port for the keep-alive server
-EXPOSE 8080
+EXPOSE 7860
 
 # Command to run the bot
 CMD ["python", "main.py"]
